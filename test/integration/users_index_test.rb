@@ -28,4 +28,13 @@ class UsersIndexTest < ActionDispatch::IntegrationTest
     get users_path
     assert_select 'a', text: 'delete', count: 0
   end
+
+  test "index without non-activated users" do
+    @non_admin.toggle!(:activated)
+    log_in_as @admin
+    get users_path
+    assert_no_match @non_admin.name, response.body
+    get user_path(@non_admin)
+    assert_redirected_to root_path
+  end
 end
