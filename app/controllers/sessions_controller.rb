@@ -1,4 +1,5 @@
 class SessionsController < ApplicationController
+	before_action :logged_in_user, only: :destroy
 
 	def new
 	end
@@ -23,6 +24,12 @@ class SessionsController < ApplicationController
 	end
 
 	def destroy
+		reset_all_sessions(current_user)
+		flash[:success] = "Sessions empty."
+		redirect_to edit_user_path(current_user)
+	end
+
+	def logout
 		log_out if logged_in?
 		redirect_to root_url
 	end

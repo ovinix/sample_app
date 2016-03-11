@@ -7,6 +7,8 @@ module SessionsHelper
 
 	# Remembers a user in a persistent session.
 	def remember(user)
+		user.remote_ip = request.remote_ip
+		user.browser = "#{browser.platform.name}/#{browser.name}"
 		user.remember
 		cookies.permanent.signed[:user_id] = user.id
 		cookies.permanent[:remember_token] = user.remember_token
@@ -37,9 +39,15 @@ module SessionsHelper
 
 	# Forgets a persistent session.
 	def forget(user)
-		user.forget
+		user.forget(cookies[:remember_token])
 		cookies.delete(:user_id)
 		cookies.delete(:remember_token)
+	end
+
+	# Forgets all sessions.
+	def reset_all_sessions(user)
+		forget(user)
+		user.forget_all
 	end
 
 	# Logs out the current user.

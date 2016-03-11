@@ -1,0 +1,10 @@
+one:
+  user: michael
+  remember_digest: <%= User.digest('password') %>
+  ip_address: '127.0.0.1'
+  created_at: <%= 10.minutes.ago %>
+two:
+  user: michael
+  remember_digest: <%= User.digest('password') %>
+  ip_address: '127.0.0.2'
+  created_at: <%= 10.hours.ago %>

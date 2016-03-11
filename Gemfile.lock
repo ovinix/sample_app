@@ -46,6 +46,7 @@ GEM
       sass (~> 3.2)
     bootstrap-will_paginate (0.0.10)
       will_paginate
+    browser (2.0.2)
     builder (3.2.2)
     byebug (3.4.0)
       columnize (~> 0.8)
@@ -233,6 +234,7 @@ DEPENDENCIES
   bcrypt (= 3.1.7)
   bootstrap-sass (= 3.2.0.0)
   bootstrap-will_paginate (= 0.0.10)
+  browser (= 2.0.2)
   byebug (= 3.4.0)
   carrierwave (= 0.10.0)
   cloudinary (= 1.1.2)

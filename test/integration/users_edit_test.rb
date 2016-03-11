@@ -50,4 +50,21 @@ class UsersEditTest < ActionDispatch::IntegrationTest
 		assert_equal name, @user.name
 		assert_equal email, @user.email
   end
+
+  test "sessions reset" do
+    assert_difference '@user.sessions.count', 1 do
+      log_in_as @user
+    end
+    get edit_user_path(@user)
+    # Check sessions layout
+    assert_match sessions(:one).ip_address, response.body
+    assert_match sessions(:two).ip_address, response.body
+    # Forgetting all sessions
+    delete reset_path
+    assert_redirected_to edit_user_path(@user)
+    follow_redirect!
+    @user.reload
+    assert_equal 0, @user.sessions.count
+    assert_match CGI::escapeHTML("No remembred sessions."), response.body
+  end
 end

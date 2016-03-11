@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+	has_many :sessions, dependent: :destroy
 	has_many :microposts, dependent: :destroy
 	has_many :active_relationships, class_name: "Relationship",
 																	foreign_key: "follower_id",
@@ -11,7 +12,7 @@ class User < ActiveRecord::Base
 	has_many :followers, through: :passive_relationships,
 											 source: :follower
 
-	attr_accessor :remember_token, :activation_token, :reset_token
+	attr_accessor :remember_token, :activation_token, :reset_token, :remote_ip, :browser
 
 	before_create :create_activation_digest
 	before_save :downcase_email
@@ -41,19 +42,35 @@ class User < ActiveRecord::Base
 	# Remembers a user in the database for use in persistent sessions.
 	def remember
 		self.remember_token = User.new_token
-		update_attribute(:remember_digest, User.digest(remember_token))
+		self.sessions.create( remember_digest: User.digest(remember_token),
+													ip_address: remote_ip,
+													browser: browser )
 	end
 
 	# Returns true if the given token matches the digest.
 	def authenticated?(attribute, token)
-		digest = self.send("#{attribute}_digest")
-		return false if digest.nil?
-		BCrypt::Password.new(digest).is_password?(token)
+		if attribute.to_s == 'remember'
+			self.sessions.each do |session|
+				return true if BCrypt::Password.new(session.remember_digest).is_password?(token)
+			end
+			return false
+		else
+			digest = self.send("#{attribute}_digest")
+			return false if digest.nil?
+			BCrypt::Password.new(digest).is_password?(token)
+		end		
 	end
 
 	# Forgets a user.
-	def forget
-		update_attribute(:remember_digest, nil)
+	def forget(token)
+		self.sessions.each do |session|
+			session.destroy if BCrypt::Password.new(session.remember_digest).is_password?(token)
+		end
+	end
+
+	# Forgets all sessions.
+	def forget_all
+		self.sessions.delete_all
 	end
 
 	# Activates an account.
