@@ -6,7 +6,7 @@ class MicropostsController < ApplicationController
     @micropost = current_user.microposts.build(micropost_params)
     
     if @micropost.save
-      flash[:success] = "Micropost created!"     
+      flash.now[:success] = "Micropost created!"     
       @micropost = current_user.microposts.build
     end
     

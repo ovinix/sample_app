@@ -1,3 +1,4 @@
 $(".user_info").html("<%= escape_javascript(render 'shared/user_info') %>");
 $(".micropost_form").html("<%= escape_javascript(render 'shared/micropost_form') %>");
 $("#feed").html("<%= escape_javascript(render 'shared/feed') %>");
+$("#flash").replaceWith("<%= escape_javascript(render 'layouts/flash') %>");
